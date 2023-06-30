@@ -7,8 +7,9 @@ from mao_model.suits import Suits
 
 
 class Deck:
-    def __init__(self, cards: List[Card]):
+    def __init__(self, cards: List[Card], face_up=False):
         self.cards = cards
+        self.face_up = face_up
 
     @classmethod
     def get_full_deck(cls):
@@ -43,3 +44,6 @@ class Deck:
         self.cards.extend(deck.cards)
         self.shuffle()
         deck.cards = []
+
+    def flip(self):
+        self.face_up = not self.face_up

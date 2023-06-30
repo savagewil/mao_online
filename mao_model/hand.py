@@ -4,7 +4,8 @@ from mao_model.card import Card
 
 
 class Hand:
-    def __init__(self, cards: List[Card]):
+    def __init__(self, cards: List[Card], face_up: bool = False):
+        self.face_up = face_up
         self.cards = cards
 
     def play(self, idx: int):
@@ -15,3 +16,6 @@ class Hand:
 
     def add(self, card: Card):
         self.cards.append(card)
+
+    def flip(self):
+        self.face_up = not self.face_up
