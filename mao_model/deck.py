@@ -1,5 +1,5 @@
 import random
-from typing import List, Self
+from typing import List
 
 from mao_model.card import Card
 from mao_model.ranks import Ranks
@@ -40,7 +40,7 @@ class Deck:
     def add_to_top(self, card: Card):
         self.cards.insert(0, card)
 
-    def shuffle_in(self, deck: Self):
+    def shuffle_in(self, deck):
         self.cards.extend(deck.cards)
         self.shuffle()
         deck.cards = []

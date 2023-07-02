@@ -1,13 +1,12 @@
 from re import match
-from typing import Self
 
 
 class MaoEvent:
     def __init__(self, **properties):
         self.properties = properties
 
-    def match(self, event: Self) -> bool:
-        pass
+    def match(self, event) -> bool:
+        return MaoEvent.match_dict(self.properties, event.properties)
 
     @staticmethod
     def match_dict(dict_1: dict, dict_2: dict) -> bool:
@@ -16,7 +15,7 @@ class MaoEvent:
                 return False
             else:
                 if isinstance(value, dict) and isinstance(dict_2[key], dict):
-                    MaoEvent.match_dict(value, dict_2[key])
+                    return MaoEvent.match_dict(value, dict_2[key])
                 elif isinstance(value, str) and isinstance(dict_2[key], str):
                     return bool(match(value, dict_2[key]))
                 else:
