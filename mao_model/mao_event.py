@@ -27,3 +27,9 @@ class MaoEvent:
     @classmethod
     def from_dict(cls, json_dict: dict):
         return cls(**json_dict)
+
+    def __str__(self):
+        return F"MaoEvent{self.properties}"
+
+    def __repr__(self):
+        return self.__str__()

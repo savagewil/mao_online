@@ -9,3 +9,4 @@ class ActionTypes(Enum):
     ADD_DECK = 4
     ADD_PLAYER = 5
     SEND_CHAT = 6
+    SET_PROPERTY = 7

@@ -7,7 +7,7 @@ from mao_model.player import Player
 
 
 class MaoGame:
-    def __init__(self, players: Dict[str, Player], decks: Dict[str, Deck], rules: List, properties={}):
+    def __init__(self, players: Dict[str, Player], decks: Dict[str, Deck], rules: List, properties={}, verbose=False):
         self.players = players
         self.decks = decks
         self.rules = rules
@@ -15,8 +15,16 @@ class MaoGame:
         self.eventQueue: List[MaoEvent] = []
         self.properties = properties
         self.over = False
+        self.verbose = verbose
 
-    def addEvent(self, event: MaoEvent):
+    def LOG(self, message: str):
+        if self.verbose:
+            print(message)
+
+    def addEvent(self, **properties):
+        properties["game_properties"] = self.properties
+        event = MaoEvent(**properties)
+        self.LOG(f"Added event {event}")
         self.eventQueue.append(event)
 
     def drawCards(self, player: str, deck: str, count: int):
@@ -25,8 +33,8 @@ class MaoGame:
         for _ in range(count):
             card = deck_.draw()
             player_.hand.add(card)
-            self.addEvent(MaoEvent(type="draw", player=player, deck=deck, card=card.to_dict()))
-        self.chat.append(f"{player} drew cards from {deck}")
+            self.addEvent(type="draw", player=player, deck=deck, card=card.to_dict())
+        self.chat.append(f"{player} drew {count} cards from {deck}")
 
     def playCard(self, player: str, deck: str, index: int):
         player_ = self.players[player]
@@ -34,42 +42,47 @@ class MaoGame:
         card = player_.hand.play(index)
         deck_.add_to_top(card)
         self.chat.append(f"{player} played card on {deck}")
-        self.addEvent(MaoEvent(type="play", player=player, deck=deck, card=card.to_dict()))
+        self.addEvent(type="play", player=player, deck=deck, card=card.to_dict())
 
     def addDeck(self, deck_name: str, face_up=False, deck=None):
         self.decks[deck_name] = deck if deck is not None else Deck.get_shuffled_deck()
         self.decks[deck_name].face_up = face_up
         self.chat.append(f"Deck: {deck_name} added")
-        self.addEvent(MaoEvent(type="deck", deck=deck))
+        self.addEvent(type="deck", deck=deck)
 
     def addPlayer(self, player_name: str):
         self.players[player_name] = Player(player_name, Hand([]))
         self.chat.append(f"Player: {player_name} added")
-        self.addEvent(MaoEvent(type="player", player=player_name))
+        self.addEvent(type="player", player=player_name)
 
     def setGameProperty(self, property: str, value: str):
         self.properties[property] = value
         self.chat.append(f"Property: {property} set to {value}")
-        self.addEvent(MaoEvent(type="property_update", property=property, value=value))
+        self.addEvent(type="property_update", property=property, value=value)
 
-    def sendChat(self, player: Player, message: str):
-        self.chat.append(f"{player.name}: {message}")
-        self.addEvent(MaoEvent(type="chat", player=player, message=message))
+    def sendChat(self, player: str, message: str):
+        assert player in self.players
+        self.chat.append(f"{player}: {message}")
+        self.addEvent(type="chat", player=player, message=message)
 
     def handle_event(self, event: MaoEvent):
         for rule in self.rules:
             rule.handle_event(event, self)
 
     def start_game(self):
-        self.addEvent(MaoEvent(type="start"))
+        self.addEvent(type="start")
 
     def end_game(self):
         self.over = True
-        self.addEvent(MaoEvent(type="end"))
+        self.addEvent(type="end")
 
     def dump_queue(self):
         queue, self.eventQueue = self.eventQueue, []
         return queue
+
+    def handle_events(self):
+        for event in self.dump_queue():
+            self.handle_event(event)
 
 
 if __name__ == '__main__':

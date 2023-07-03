@@ -19,3 +19,9 @@ class Hand:
 
     def flip(self):
         self.face_up = not self.face_up
+
+    def __str__(self):
+        return F"Hand{self.cards}"
+
+    def __repr__(self):
+        return self.__str__()

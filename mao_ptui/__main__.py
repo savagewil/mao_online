@@ -10,6 +10,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description="Running mao on the command line")
     parser.add_argument("--players", nargs="+", required=True, dest="players")
     parser.add_argument("--rules", nargs="*", dest="rules", default=[])
+    parser.add_argument("--verbose", dest="verbose", action="store_true")
     args = parser.parse_args()
     rules = [
         Rule("dict",
@@ -19,14 +20,21 @@ if __name__ == '__main__':
         Rule("start deck",
              MaoEvent(type="start"),
              positive_action=Action(ActionTypes.ADD_DECK,
-                                    {"deck": "Deck"}))
+                                    {"deck": "Deck"})),
+        Rule("draw first hand",
+             MaoEvent(type="player"),
+             positive_action=Action(ActionTypes.DRAW_CARDS,
+                                    {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
+        Rule("draw first hand",
+             MaoEvent(type="player"),
+             positive_action=Action(ActionTypes.,
+                                    {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
     ]
-    game = MaoGame({}, {}, args.rules + rules)
+    game = MaoGame({}, {}, args.rules + rules, verbose=args.verbose)
+    game.start_game()
     for player in args.players:
         game.addPlayer(player)
-    game.start_game()
     while not game.over:
-        for event in game.dump_queue():
-            game.handle_event(event)
+        game.handle_events()
         print("\n".join(game.chat))
         input("wait")

@@ -12,8 +12,8 @@ class Action:
         if self.action_type == ActionTypes.ADD_EVENT:
             event_properties = {}
             for key, val in self.properties.items():
-                event_properties[key] = self.get_property(event, key)
-            game.addEvent(MaoEvent(**event_properties))
+                event_properties[key] = self.get_property(event, game, key)
+            game.addEvent(**event_properties)
         elif self.action_type == ActionTypes.DRAW_CARDS:
             game.drawCards(self.get_property(event, game, "player"),
                            self.get_property(event, game, "deck"),
@@ -28,8 +28,11 @@ class Action:
         elif self.action_type == ActionTypes.ADD_PLAYER:
             game.addPlayer(self.get_property(event, game, "player"))
         elif self.action_type == ActionTypes.SEND_CHAT:
-            game.sendChat(game.players[self.get_property(event, game, "player")],
+            game.sendChat(self.get_property(event, game, "player"),
                           self.get_property(event, game, "message"))
+        elif self.action_type == ActionTypes.SET_PROPERTY:
+            game.setGameProperty(self.get_property(event, game, "property"),
+                                 self.get_property(event, game, "value"))
         else:
             pass
 
@@ -39,7 +42,6 @@ class Action:
                 variables = self.properties[name][2:-2].split(".")
                 source = variables[0]
                 variables = variables[1:]
-                table = None
                 if source == "game":
                     table = game.properties
                     for var in variables:
