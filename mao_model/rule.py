@@ -14,3 +14,14 @@ class Rule:
             self.postive_action.run(event, game)
         else:
             self.negative_action.run(event, game)
+
+    def to_dict(self):
+        return {"eventSchema": self.eventSchema.to_dict(),
+                "postive_action": self.postive_action.to_dict(),
+                "negative_action": self.negative_action.to_dict()}
+
+    @classmethod
+    def from_dict(cls, json_dict):
+        return cls(eventSchema=MaoEvent.from_dict(json_dict["eventSchema"]),
+                   postive_action=Action.from_dict(json_dict["postive_action"]),
+                   negative_action=Action.from_dict(json_dict["negative_action"]))

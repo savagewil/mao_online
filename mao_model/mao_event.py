@@ -20,3 +20,10 @@ class MaoEvent:
                     return bool(match(value, dict_2[key]))
                 else:
                     return False
+
+    def to_dict(self) -> dict:
+        return self.properties
+
+    @classmethod
+    def from_dict(cls, json_dict: dict):
+        return cls(**json_dict)

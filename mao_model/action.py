@@ -52,3 +52,13 @@ class Action:
             else:
                 return self.properties[name]
         return default
+
+    def to_dict(self) -> dict:
+        return {
+            "properties": self.properties,
+            "action_type": self.action_type.name
+        }
+
+    @classmethod
+    def from_dict(cls, json_dict: dict):
+        return cls(action_type=ActionTypes[json_dict["action_type"]], properties=json_dict["properties"])
