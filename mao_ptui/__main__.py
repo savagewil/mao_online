@@ -27,8 +27,8 @@ if __name__ == '__main__':
                                     {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
         Rule("draw first hand",
              MaoEvent(type="player"),
-             positive_action=Action(ActionTypes.,
-                                    {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
+             positive_action=Action(ActionTypes.SET_PROPERTY,
+                                    {"property": "turn", "value": "0"})),
     ]
     game = MaoGame({}, {}, args.rules + rules, verbose=args.verbose)
     game.start_game()
