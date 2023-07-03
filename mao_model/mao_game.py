@@ -37,7 +37,7 @@ class MaoGame:
         self.addEvent(MaoEvent(type="play", player=player, deck=deck, card=card.to_dict()))
 
     def addDeck(self, deck_name: str, face_up=False, deck=None):
-        self.decks[deck_name] = deck if deck is not None else Deck.get_full_deck()
+        self.decks[deck_name] = deck if deck is not None else Deck.get_shuffled_deck()
         self.decks[deck_name].face_up = face_up
         self.chat.append(f"Deck: {deck_name} added")
         self.addEvent(MaoEvent(type="deck", deck=deck))
