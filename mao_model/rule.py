@@ -1,12 +1,14 @@
 import json
 
-from mao_model.action import Action
+from mao_model.action import Action, NONE_ACTION
 from mao_model.mao_event import MaoEvent
 from mao_model.mao_game import MaoGame
 
 
 class Rule:
-    def __init__(self, name: str, eventSchema: MaoEvent, positive_action: Action, negative_action: Action):
+    def __init__(self, name: str, eventSchema: MaoEvent,
+                 positive_action: Action = NONE_ACTION,
+                 negative_action: Action = NONE_ACTION):
         self.name = name
         self.eventSchema: MaoEvent = eventSchema
         self.positive_action: Action = positive_action

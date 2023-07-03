@@ -10,7 +10,8 @@ class MaoEvent:
 
     @staticmethod
     def match_dict(dict_1: dict, dict_2: dict) -> bool:
-        for key, value in dict_1:
+        print(dict_1, dict_2)
+        for key, value in dict_1.items():
             if key not in dict_2:
                 return False
             else:

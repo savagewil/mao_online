@@ -45,7 +45,7 @@ class MaoGame:
     def addPlayer(self, player_name: str):
         self.players[player_name] = Player(Hand([]))
         self.chat.append(f"Player: {player_name} added")
-        self.addEvent(MaoEvent(type="player", deck=player_name))
+        self.addEvent(MaoEvent(type="player", player=player_name))
 
     def setGameProperty(self, property: str, value: str):
         self.properties[property] = value

@@ -4,7 +4,7 @@ from mao_model.mao_game import MaoGame
 
 
 class Action:
-    def __init__(self, action_type: ActionTypes, properties: dict):
+    def __init__(self, action_type: ActionTypes, properties: dict = {}):
         self.action_type = action_type
         self.properties = properties
 
@@ -62,3 +62,6 @@ class Action:
     @classmethod
     def from_dict(cls, json_dict: dict):
         return cls(action_type=ActionTypes[json_dict["action_type"]], properties=json_dict["properties"])
+
+
+NONE_ACTION = Action(ActionTypes.NONE, {})
