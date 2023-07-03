@@ -11,24 +11,25 @@ class Action:
     def run(self, event: MaoEvent, game: MaoGame):
         if self.action_type == ActionTypes.ADD_EVENT:
             event_properties = {}
-            for key, val in self.properties:
+            for key, val in self.properties.items():
                 event_properties[key] = self.get_property(event, key)
             game.addEvent(MaoEvent(**event_properties))
         elif self.action_type == ActionTypes.DRAW_CARDS:
-            game.drawCards(self.get_property(event, "player"),
-                           self.get_property(event, "deck"),
-                           int(self.get_property(event, "count")))
+            game.drawCards(self.get_property(event, game, "player"),
+                           self.get_property(event, game, "deck"),
+                           int(self.get_property(event, game, "count")))
         elif self.action_type == ActionTypes.PLAY_CARD:
-            game.playCard(self.get_property(event, "player"),
-                          self.get_property(event, "deck"),
-                          int(self.get_property(event, "index")))
+            game.playCard(self.get_property(event, game, "player"),
+                          self.get_property(event, game, "deck"),
+                          int(self.get_property(event, game, "index")))
         elif self.action_type == ActionTypes.ADD_DECK:
-            game.addDeck(self.get_property(event, "deck"),
-                         bool(self.get_property(event, "face_up", False)))
+            game.addDeck(self.get_property(event, game, "deck"),
+                         bool(self.get_property(event, game, "face_up", False)))
         elif self.action_type == ActionTypes.ADD_PLAYER:
-            game.addPlayer(self.get_property(event, "player"))
+            game.addPlayer(self.get_property(event, game, "player"))
         elif self.action_type == ActionTypes.SEND_CHAT:
-            game.sendChat(game.players[self.get_property(event, "player")], self.get_property(event, "message"))
+            game.sendChat(game.players[self.get_property(event, game, "player")],
+                          self.get_property(event, game, "message"))
         else:
             pass
 

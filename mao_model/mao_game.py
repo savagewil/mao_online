@@ -43,7 +43,7 @@ class MaoGame:
         self.addEvent(MaoEvent(type="deck", deck=deck))
 
     def addPlayer(self, player_name: str):
-        self.players[player_name] = Player(Hand([]))
+        self.players[player_name] = Player(player_name, Hand([]))
         self.chat.append(f"Player: {player_name} added")
         self.addEvent(MaoEvent(type="player", player=player_name))
 
@@ -53,7 +53,7 @@ class MaoGame:
         self.addEvent(MaoEvent(type="property_update", property=property, value=value))
 
     def sendChat(self, player: Player, message: str):
-        self.chat.append(message)
+        self.chat.append(f"{player.name}: {message}")
         self.addEvent(MaoEvent(type="chat", player=player, message=message))
 
     def handle_event(self, event: MaoEvent):

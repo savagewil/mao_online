@@ -15,7 +15,7 @@ if __name__ == '__main__':
     new_rule = Rule("test",
                     MaoEvent(type="player", player=".*"),
                     positive_action=Action(ActionTypes.SEND_CHAT,
-                                           {"player": "event.player", "message": "I am a dict"}))
+                                           {"player": "{{event.player}}", "message": "I am a dict"}))
     game = MaoGame({}, {}, args.rules + [new_rule])
     for player in args.players:
         game.addPlayer(player)
