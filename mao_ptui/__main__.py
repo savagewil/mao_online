@@ -2,9 +2,11 @@ from argparse import ArgumentParser
 
 from mao_model.action import Action
 from mao_model.action_types import ActionTypes
+from mao_model.evaluation.eval import Eval
 from mao_model.mao_event import MaoEvent
 from mao_model.mao_game import MaoGame
 from mao_model.rule import Rule
+from mao_ptui.rendering_utils import render_hand, render_deck
 
 if __name__ == '__main__':
     parser = ArgumentParser(description="Running mao on the command line")
@@ -13,22 +15,35 @@ if __name__ == '__main__':
     parser.add_argument("--verbose", dest="verbose", action="store_true")
     args = parser.parse_args()
     rules = [
-        Rule("dict",
-             MaoEvent(type="player"),
-             positive_action=Action(ActionTypes.SEND_CHAT,
-                                    {"player": "{{event.player}}", "message": "I am a dict"})),
         Rule("start deck",
              MaoEvent(type="start"),
              positive_action=Action(ActionTypes.ADD_DECK,
                                     {"deck": "Deck"})),
+        Rule("start deck",
+             MaoEvent(type="start"),
+             positive_action=Action(ActionTypes.ADD_DECK,
+                                    {"deck": "play", "empty": "True"})),
         Rule("draw first hand",
              MaoEvent(type="player"),
              positive_action=Action(ActionTypes.DRAW_CARDS,
                                     {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
-        Rule("draw first hand",
-             MaoEvent(type="player"),
-             positive_action=Action(ActionTypes.SET_PROPERTY,
-                                    {"property": "turn", "value": "0"})),
+        Eval.deserialize(["if", ["=", "start", ["load", "event", "type"]],
+                          ["run all", ["set", "game", "turn", 0], ["set", "game", "players", []]]]),
+        Eval.deserialize(["if", ["=", "player", ["load", "event", "type"]],
+                          ["run all", ["set", "game", "players",
+                                       ["append", ["load", "game", "players"], ["load", "event", "player"]]]]]),
+        Eval.deserialize(
+            ["if",
+             ["and",
+              ["=",
+               "chat",
+               ["load", "event", "type"]],
+              [["=",
+                ["load", "event", "player"],
+                ["get", ["load", "game", "players"], ["load", "game", "turn"]]]]],
+             ["run all",
+              ["set", "game", "turn",
+               ["%", ["++", ["load", "game", "turn"]], ["len", ["load", "game", "players"]]]]]])
     ]
     game = MaoGame({}, {}, args.rules + rules, verbose=args.verbose)
     game.start_game()
@@ -37,4 +52,10 @@ if __name__ == '__main__':
     while not game.over:
         game.handle_events()
         print("\n".join(game.chat))
-        input("wait")
+        if len(game.decks['play'].cards):
+            print(f"Top card {render_deck(game.decks['play'])}")
+        else:
+            print(f"Top card {render_deck(game.decks['play'])}")
+        print(render_hand(game.players[game.properties['players'][game.properties['turn']]].hand))
+        text = input(f"{game.properties['players'][game.properties['turn']]} send chat:")
+        game.sendChat(game.properties['players'][game.properties['turn']], text)

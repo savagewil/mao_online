@@ -26,7 +26,8 @@ class Action:
                               int(self.get_property(event, game, "index")))
             case ActionTypes.ADD_DECK:
                 game.addDeck(self.get_property(event, game, "deck"),
-                             bool(self.get_property(event, game, "face_up", False)))
+                             bool(self.get_property(event, game, "face_up", False)),
+                             bool(self.get_property(event, game, "empty", False)))
             case ActionTypes.ADD_PLAYER:
                 game.addPlayer(self.get_property(event, game, "player"))
             case ActionTypes.SEND_CHAT:

@@ -33,8 +33,17 @@ class MaoGame:
         for _ in range(count):
             card = deck_.draw()
             player_.hand.add(card)
-            self.addEvent(type="draw", player=player, deck=deck, card=card.to_tuple())
+            self.addEvent(type="draw", player=player, deck=deck, card=card.to_dict())
         self.chat.append(f"{player} drew {count} cards from {deck}")
+
+    def dealCards(self, deck_from: str, deck_to: str, count: int):
+        deck_from_ = self.players[deck_from]
+        deck_to_ = self.decks[deck_to]
+        for _ in range(count):
+            card = deck_from_.draw()
+            deck_to_.add_to_top(card)
+            self.addEvent(type="deal", deck_from=deck_from, deck_to=deck_to, card=card.to_dict())
+        self.chat.append(f"Dealt{count} cards from {deck_from} to {deck_to}")
 
     def playCard(self, player: str, deck: str, index: int):
         player_ = self.players[player]
@@ -44,11 +53,11 @@ class MaoGame:
         self.chat.append(f"{player} played card on {deck}")
         self.addEvent(type="play", player=player, deck=deck, card=card.to_tuple())
 
-    def addDeck(self, deck_name: str, face_up=False, deck=None):
-        self.decks[deck_name] = deck if deck is not None else Deck.get_shuffled_deck()
+    def addDeck(self, deck_name: str, face_up=False, empty=False):
+        self.decks[deck_name] = Deck([], face_up) if empty else Deck.get_shuffled_deck()
         self.decks[deck_name].face_up = face_up
         self.chat.append(f"Deck: {deck_name} added")
-        self.addEvent(type="deck", deck=deck)
+        self.addEvent(type="deck", deck=deck_name)
 
     def addPlayer(self, player_name: str):
         self.players[player_name] = Player(player_name, Hand([]))
@@ -56,7 +65,15 @@ class MaoGame:
         self.addEvent(type="player", player=player_name)
 
     def setGameProperty(self, property: str, value: str):
-        self.properties[property] = value
+        table = self.properties
+        variables = property.split(".")
+        for var in variables[:-1]:
+            if var in table and isinstance(table[var], dict):
+                table = table[var]
+            else:
+                table[var] = {}
+                table = table[var]
+        table[variables[-1]] = value
         self.chat.append(f"Property: {property} set to {value}")
         self.addEvent(type="property_update", property=property, value=value)
 
