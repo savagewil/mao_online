@@ -36,6 +36,10 @@ class Action:
             case ActionTypes.SET_PROPERTY:
                 game.setGameProperty(self.get_property(event, game, "property"),
                                      self.get_property(event, game, "value"))
+            case ActionTypes.DEAL_CARDS:
+                game.dealCards(self.get_property(event, game, "deck_from"),
+                               self.get_property(event, game, "deck_to"),
+                               int(self.get_property(event, game, "count")))
 
     def get_property(self, event: MaoEvent, game: MaoGame, name: str, default=None):
         if name in self.properties:

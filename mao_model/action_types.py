@@ -10,3 +10,4 @@ class ActionTypes(Enum):
     ADD_PLAYER = 5
     SEND_CHAT = 6
     SET_PROPERTY = 7
+    DEAL_CARDS = 8

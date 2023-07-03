@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 from typing import Union
 
@@ -8,25 +9,34 @@ from mao_model.mao_game import MaoGame
 class EvalOperations(Enum):
     OR = "or"
     AND = "and"
-    NOT = "!"
-    PLUS = "+"
-    MINUS = "-"
-    DIVIDE = "/"
-    MULTIPLY = "*"
-    MOD = "%"
+    NOT = "not"
+    PLUS = "add"
+    MINUS = "sub"
+    DIVIDE = "div"
+    MULTIPLY = "mult"
+    MOD = "mod"
     IF = "if"
-    IF_ELSE = "if-else"
+    IF_ELSE = "if_else"
     LOAD = "load"
     SET = "set"
-    INCREMENT = "++"
-    DECREMENT = "--"
-    EQUALS = "="
-    LESS_THAN = "<"
-    GREATER_THAN = ">"
+    INCREMENT = "inc"
+    DECREMENT = "dec"
+    EQUALS = "equals"
+    LESS_THAN = "greater_than"
+    GREATER_THAN = "less_than"
     RUN_ALL = "run all"
     APPEND = "append"
     LENGTH = "len"
     GET = "get"
+    MATCH = "match"
+    FIND = "find"
+    ADD_EVENT = "add_event"
+    DRAW_CARDS = "draw_cards"
+    DEAL_CARDS = "deal_cards"
+    PLAY_CARD = "play_card"
+    ADD_DECK = "add_deck"
+    ADD_PLAYER = "add_player"
+    SEND_CHAT = "send_chat"
 
     @classmethod
     def has_string(cls, string: str):
@@ -109,6 +119,34 @@ class Eval(object):
                 return len(self.evals[0].get_value(event, game))
             case EvalOperations.GET:
                 return self.evals[0].get_value(event, game)[self.evals[1].get_value(event, game)]
+            case EvalOperations.MATCH:
+                return bool(re.match(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game)))
+            case EvalOperations.FIND:
+                return re.findall(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))[0]
+            case EvalOperations.ADD_EVENT:
+                values = [eval.get_value(event, game) for eval in self.evals]
+                return game.addEvent(**dict(zip(values[::2], values[1::2])))
+            case EvalOperations.DRAW_CARDS:
+                return game.drawCards(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
+                                      self.evals[2].get_value(event, game))
+            case EvalOperations.DEAL_CARDS:
+                return game.dealCards(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
+                                      self.evals[2].get_value(event, game))
+            case EvalOperations.PLAY_CARD:
+                return game.playCard(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
+                                     self.evals[2].get_value(event, game))
+            case EvalOperations.ADD_DECK:
+                if len(self.evals) == 3:
+                    return game.addDeck(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
+                                        self.evals[2].get_value(event, game))
+                elif len(self.evals) == 2:
+                    return game.addDeck(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
+                else:
+                    return game.addDeck(self.evals[0].get_value(event, game))
+            case EvalOperations.ADD_PLAYER:
+                return game.addPlayer(self.evals[0].get_value(event, game))
+            case EvalOperations.SEND_CHAT:
+                return game.sendChat(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
 
     def __eq__(self, other):
         return self.op == other.op and len(self.evals) == len(other.evals) and all(

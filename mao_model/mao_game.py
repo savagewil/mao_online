@@ -37,7 +37,7 @@ class MaoGame:
         self.chat.append(f"{player} drew {count} cards from {deck}")
 
     def dealCards(self, deck_from: str, deck_to: str, count: int):
-        deck_from_ = self.players[deck_from]
+        deck_from_ = self.decks[deck_from]
         deck_to_ = self.decks[deck_to]
         for _ in range(count):
             card = deck_from_.draw()
@@ -45,13 +45,14 @@ class MaoGame:
             self.addEvent(type="deal", deck_from=deck_from, deck_to=deck_to, card=card.to_dict())
         self.chat.append(f"Dealt{count} cards from {deck_from} to {deck_to}")
 
-    def playCard(self, player: str, deck: str, index: int):
+    def playCard(self, player: str, deck: str, index: str):
+        self.LOG(f"{player} plays {index} on {deck} ")
         player_ = self.players[player]
         deck_ = self.decks[deck]
-        card = player_.hand.play(index)
+        card = player_.hand.play(int(index))
         deck_.add_to_top(card)
         self.chat.append(f"{player} played card on {deck}")
-        self.addEvent(type="play", player=player, deck=deck, card=card.to_tuple())
+        self.addEvent(type="play", player=player, deck=deck, card=card.to_dict())
 
     def addDeck(self, deck_name: str, face_up=False, empty=False):
         self.decks[deck_name] = Deck([], face_up) if empty else Deck.get_shuffled_deck()
@@ -78,7 +79,6 @@ class MaoGame:
         self.addEvent(type="property_update", property=property, value=value)
 
     def sendChat(self, player: str, message: str):
-        assert player in self.players
         self.chat.append(f"{player}: {message}")
         self.addEvent(type="chat", player=player, message=message)
 
