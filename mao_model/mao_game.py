@@ -33,7 +33,7 @@ class MaoGame:
         for _ in range(count):
             card = deck_.draw()
             player_.hand.add(card)
-            self.addEvent(type="draw", player=player, deck=deck, card=card.to_dict())
+            self.addEvent(type="draw", player=player, deck=deck, card=card.to_tuple())
         self.chat.append(f"{player} drew {count} cards from {deck}")
 
     def playCard(self, player: str, deck: str, index: int):
@@ -42,7 +42,7 @@ class MaoGame:
         card = player_.hand.play(index)
         deck_.add_to_top(card)
         self.chat.append(f"{player} played card on {deck}")
-        self.addEvent(type="play", player=player, deck=deck, card=card.to_dict())
+        self.addEvent(type="play", player=player, deck=deck, card=card.to_tuple())
 
     def addDeck(self, deck_name: str, face_up=False, deck=None):
         self.decks[deck_name] = deck if deck is not None else Deck.get_shuffled_deck()

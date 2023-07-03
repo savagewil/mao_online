@@ -9,10 +9,3 @@ class EvalLiteral(Eval):
 
     def get_value(self, event: MaoEvent, game: MaoGame):
         return self.value
-
-    def to_dict(self) -> dict:
-        return self.value
-
-    @classmethod
-    def from_dict(cls, obj: object):
-        cls(obj)
