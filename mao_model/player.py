@@ -12,3 +12,6 @@ class Player:
 
     def __repr__(self):
         return self.__str__()
+
+    def to_dict(self):
+        return {"name": self.name, "hand": self.hand.to_dict()}

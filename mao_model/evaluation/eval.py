@@ -1,3 +1,4 @@
+import json
 import re
 from enum import Enum
 from typing import Union
@@ -170,6 +171,13 @@ class Eval(object):
 
     def handle_event(self, event: MaoEvent, game: MaoGame):
         self.get_value(event, game)
+
+    def to_json(self):
+        return json.dumps(self.serialize())
+
+    @classmethod
+    def from_json(self, json_str: str):
+        return self.deserialize(json.loads(json_str))
 
 
 class EvalLiteral(Eval):

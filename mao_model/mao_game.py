@@ -23,6 +23,7 @@ class MaoGame:
 
     def addEvent(self, **properties):
         properties["game_properties"] = self.properties
+        properties["players"] = self.players
         event = MaoEvent(**properties)
         self.LOG(f"Added event {event}")
         self.eventQueue.append(event)
@@ -33,7 +34,8 @@ class MaoGame:
         for _ in range(count):
             card = deck_.draw()
             player_.hand.add(card)
-            self.addEvent(type="draw", player=player, deck=deck, card=card.to_dict())
+            self.addEvent(type="draw", player=player, player_dict=self.players[player].to_dict(), deck=deck,
+                          card=card.to_dict())
         self.chat.append(f"{player} drew {count} cards from {deck}")
 
     def dealCards(self, deck_from: str, deck_to: str, count: int):
@@ -52,7 +54,8 @@ class MaoGame:
         card = player_.hand.play(int(index))
         deck_.add_to_top(card)
         self.chat.append(f"{player} played card on {deck}")
-        self.addEvent(type="play", player=player, deck=deck, card=card.to_dict())
+        self.addEvent(type="play", player=player, deck=deck, card=card.to_dict(),
+                      player_dict=self.players[player].to_dict())
 
     def addDeck(self, deck_name: str, face_up=False, empty=False):
         self.decks[deck_name] = Deck([], face_up) if empty else Deck.get_shuffled_deck()
@@ -80,7 +83,10 @@ class MaoGame:
 
     def sendChat(self, player: str, message: str):
         self.chat.append(f"{player}: {message}")
-        self.addEvent(type="chat", player=player, message=message)
+        if player in self.players:
+            self.addEvent(type="chat", player=player, player_dict=self.players[player].to_dict(), message=message)
+        else:
+            self.addEvent(type="chat", player=player, player_dict={}, message=message)
 
     def handle_event(self, event: MaoEvent):
         for rule in self.rules:

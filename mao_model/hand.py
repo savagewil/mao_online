@@ -25,3 +25,6 @@ class Hand:
 
     def __repr__(self):
         return self.__str__()
+
+    def to_dict(self):
+        return [card.to_dict() for card in self.cards]
