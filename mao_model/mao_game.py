@@ -45,7 +45,7 @@ class MaoGame:
             card = deck_from_.draw()
             deck_to_.add_to_top(card)
             self.addEvent(type="deal", deck_from=deck_from, deck_to=deck_to, card=card.to_dict())
-        self.chat.append(f"Dealt{count} cards from {deck_from} to {deck_to}")
+        self.chat.append(f"Dealt {count} cards from {deck_from} to {deck_to}")
 
     def playCard(self, player: str, deck: str, index: str):
         self.LOG(f"{player} plays {index} on {deck} ")

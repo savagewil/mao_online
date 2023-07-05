@@ -15,24 +15,19 @@ if __name__ == '__main__':
     parser.add_argument("--verbose", dest="verbose", action="store_true")
     args = parser.parse_args()
     rules = [
-        Rule("start deck",
-             MaoEvent(type="start"),
-             positive_action=Action(ActionTypes.ADD_DECK,
-                                    {"deck": "Deck"})),
-        Rule("start play",
-             MaoEvent(type="start"),
-             positive_action=Action(ActionTypes.ADD_DECK,
-                                    {"deck": "play", "empty": "True"})),
-        Rule("start deal",
-             MaoEvent(type="start"),
-             positive_action=Action(ActionTypes.DEAL_CARDS,
-                                    {"deck_to": "play", "deck_from": "Deck", "count": "1"})),
+        Eval.deserialize(["if", ["equals", "start", ["load", "event", "type"]],
+                          ["run all",
+                           ["set", "game", "turn", 0],
+                           ["set", "game", "players", []],
+                           ["add_deck", "Deck"],
+                           ["add_deck", "play", "False", "True"],
+                           ["deal_cards", "Deck", "play", 1]
+                           ]]),
         Rule("draw first hand",
              MaoEvent(type="player"),
              positive_action=Action(ActionTypes.DRAW_CARDS,
                                     {"player": "{{event.player}}", "deck": "Deck", "count": "7"})),
-        Eval.deserialize(["if", ["equals", "start", ["load", "event", "type"]],
-                          ["run all", ["set", "game", "turn", 0], ["set", "game", "players", []]]]),
+
         Eval.deserialize(["if", ["equals", "player", ["load", "event", "type"]],
                           ["run all", ["set", "game", "players",
                                        ["append", ["load", "game", "players"], ["load", "event", "player"]]]]]),

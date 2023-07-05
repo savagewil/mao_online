@@ -138,10 +138,12 @@ class Eval(object):
                                      self.evals[2].get_value(event, game))
             case EvalOperations.ADD_DECK:
                 if len(self.evals) == 3:
-                    return game.addDeck(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
-                                        self.evals[2].get_value(event, game))
+                    return game.addDeck(self.evals[0].get_value(event, game),
+                                        bool(self.evals[1].get_value(event, game)),
+                                        bool(self.evals[2].get_value(event, game)))
                 elif len(self.evals) == 2:
-                    return game.addDeck(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
+                    return game.addDeck(self.evals[0].get_value(event, game),
+                                        bool(self.evals[1].get_value(event, game)))
                 else:
                     return game.addDeck(self.evals[0].get_value(event, game))
             case EvalOperations.ADD_PLAYER:
