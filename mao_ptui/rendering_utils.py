@@ -9,7 +9,7 @@ def render_card(card: Card):
 
 
 def render_hand(hand: Hand):
-    return " ".join(map(render_card, hand.cards))
+    return " ".join(f"{idx}:{card}" for idx, card in zip(range(len(hand.cards)), map(render_card, hand.cards)))
 
 
 def render_deck(deck: Deck):

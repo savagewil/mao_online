@@ -40,6 +40,7 @@ class EvalOperations(Enum):
     ADD_DECK = "add_deck"
     ADD_PLAYER = "add_player"
     SEND_CHAT = "send_chat"
+    FORMAT = "format"
 
     @classmethod
     def has_string(cls, string: str):
@@ -168,13 +169,16 @@ class Eval(object):
                 return game.addPlayer(self.evals[0].get_value(event, game))
             case EvalOperations.SEND_CHAT:
                 return game.sendChat(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
+            case EvalOperations.FORMAT:
+                return self.evals[0].get_value(event, game) % tuple(
+                    eval_.get_value(event, game) for eval_ in self.evals[1:])
 
     def __eq__(self, other):
         return self.op == other.op and len(self.evals) == len(other.evals) and all(
             eval.__eq__(other_eval) for eval, other_eval in zip(self.evals, other.evals))
 
     def __str__(self):
-        return f"Eval({self.op.name}, {[eval.__str__() for eval in self.evals]})"
+        return f"Eval({self.op.name}, {', '.join([eval.__str__() for eval in self.evals])})"
 
     def __repr__(self):
         return self.__str__()

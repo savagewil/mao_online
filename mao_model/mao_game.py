@@ -59,12 +59,12 @@ class MaoGame:
     def addDeck(self, deck_name: str, face_up=False, empty=False):
         self.decks[deck_name] = Deck([], face_up) if empty else Deck.get_shuffled_deck()
         self.decks[deck_name].face_up = face_up
-        self.chat.append(f"Deck: {deck_name} added")
+        self.LOG(f"Deck: {deck_name} added")
         self.addEvent(type="deck", deck=deck_name)
 
     def addPlayer(self, player_name: str):
         self.players[player_name] = Player(player_name, Hand([]))
-        self.chat.append(f"Player: {player_name} added")
+        self.LOG(f"Player: {player_name} added")
         self.addEvent(type="player", player=player_name)
 
     def setGameProperty(self, property: str, value: str):
@@ -77,7 +77,7 @@ class MaoGame:
                 table[var] = {}
                 table = table[var]
         table[variables[-1]] = value
-        self.chat.append(f"Property: {property} set to {value}")
+        self.LOG(f"Property: {property} set to {value}")
         self.addEvent(type="property_update", property=property, value=value)
 
     def sendChat(self, player: str, message: str):
@@ -88,6 +88,7 @@ class MaoGame:
             self.addEvent(type="chat", player=player, player_dict={}, message=message)
 
     def handle_event(self, event: MaoEvent):
+        self.LOG(f"Handled event {event}")
         for rule in self.rules:
             rule.handle_event(event, self)
 
@@ -103,8 +104,12 @@ class MaoGame:
         return queue
 
     def handle_events(self):
-        for event in self.dump_queue():
-            self.handle_event(event)
+        limit = 1000
+        for _ in range(limit):
+            if self.eventQueue:
+                self.handle_event(self.eventQueue.pop(0))
+            else:
+                return
 
     def to_dict(self):
         return dict(

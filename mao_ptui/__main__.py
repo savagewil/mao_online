@@ -25,7 +25,7 @@ if __name__ == '__main__':
                           ["run_all",
                            ["set", "game.player_order",
                             ["append", "game.player_order", "event.player"]],
-                           ["draw_cards", "event.player", "Deck", 7]]]),
+                           ["draw_cards", "event.player", "Deck", 1]]]),
         Eval.deserialize(
             ["if",
              ["all",
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                "chat", "event.type"],
               [["equals", "event.player",
                 ["get_list", "game.player_order", "game.turn"]]],
-              ["equals", "draw", "event.message"]],
+              ["match", "draw", "event.message"]],
              ["run_all",
               ["draw_cards", "event.player", "Deck", 1],
               ["set", "game.drew", True]]]),
@@ -80,21 +80,17 @@ if __name__ == '__main__':
                "property_update", "event.type"],
               ["equals", "turn", "event.property"]],
              ["run_all",
-              ["send_chat", "computer", "event.type"],
-              ["send_chat", "computer", "event.property"],
-              ["send_chat", "computer", ["equals", "turn", "event.property"]],
-              # ["set", "game.drew", False]
+              ["set", "game.drew", False]
               ]]),
-
-        #
-        # Eval.deserialize(
-        #     ["if",
-        #      ["all",
-        #       ["equals", "chat", "event.type"],
-        #       ["equals", "event.player",
-        #        ["get_list", "game.player_order", "game.turn"]]],
-        #      ["run_all",
-        #       ]])
+        Eval.deserialize(
+            ["if",
+             ["all",
+              ["equals",
+               "play", "event.type"],
+              ["not", "event.player_dict.hand"]],
+             ["run_all",
+              ["send_chat", "computer", ["format", "%s has won the game", "event.player"]],
+              ["draw_cards", "event.player", "Deck", 7]]]),
     ]
     game = MaoGame({}, {}, args.rules + rules, verbose=args.verbose)
     game.start_game()
