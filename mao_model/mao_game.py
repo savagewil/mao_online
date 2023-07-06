@@ -22,8 +22,7 @@ class MaoGame:
             print(message)
 
     def addEvent(self, **properties):
-        properties["game_properties"] = self.properties
-        properties["players"] = self.players
+        properties["game"] = self.to_dict()
         event = MaoEvent(**properties)
         self.LOG(f"Added event {event}")
         self.eventQueue.append(event)
@@ -53,7 +52,7 @@ class MaoGame:
         deck_ = self.decks[deck]
         card = player_.hand.play(int(index))
         deck_.add_to_top(card)
-        self.chat.append(f"{player} played card on {deck}")
+        self.chat.append(f"{player} played {card} on {deck}")
         self.addEvent(type="play", player=player, deck=deck, card=card.to_dict(),
                       player_dict=self.players[player].to_dict())
 
@@ -106,6 +105,14 @@ class MaoGame:
     def handle_events(self):
         for event in self.dump_queue():
             self.handle_event(event)
+
+    def to_dict(self):
+        return dict(
+            players={player_name: player.to_dict() for player_name, player in self.players.items()},
+            decks={deck_name: deck.to_dict() for deck_name, deck in self.decks.items()},
+            chat=self.chat,
+            **self.properties
+        )
 
 
 if __name__ == '__main__':

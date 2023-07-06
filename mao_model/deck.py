@@ -47,3 +47,9 @@ class Deck:
 
     def flip(self):
         self.face_up = not self.face_up
+
+    def to_dict(self):
+        if self.cards:
+            return {"card_count": len(self.cards), "top_card": self.peek().to_dict()}
+        else:
+            return {"card_count": len(self.cards), "top_card": None}
