@@ -7,7 +7,8 @@ from mao_model.player import Player
 
 
 class MaoGame:
-    def __init__(self, players: Dict[str, Player], decks: Dict[str, Deck], rules: List, properties={}, verbose=False):
+    def __init__(self, players: Dict[str, Player], decks: Dict[str, Deck], rules: Dict[str, object], properties={},
+                 verbose=False):
         self.players = players
         self.decks = decks
         self.rules = rules
@@ -92,7 +93,7 @@ class MaoGame:
 
     def handle_event(self, event: MaoEvent):
         self.LOG(f"Handled event {event}")
-        for rule in self.rules:
+        for rule in self.rules.values():
             rule.handle_event(event, self)
 
     def start_game(self):
