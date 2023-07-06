@@ -17,7 +17,7 @@ if __name__ == '__main__':
                            ["set", "game.player_order", []],
                            ["add_deck", "Deck"],
                            ["add_deck", "play", "False", "True"],
-                           ["deal_cards", "Deck", "play", 1],
+                           ["deal_cards", "Deck", "play", 49],
                            ["set", "game.drew", False]
                            ]]),
 
@@ -91,6 +91,17 @@ if __name__ == '__main__':
              ["run_all",
               ["send_chat", "computer", ["format", "%s has won the game", "event.player"]],
               ["draw_cards", "event.player", "Deck", 7]]]),
+        Eval.deserialize(
+            ["if",
+             ["all",
+              ["equals",
+               "draw", "event.type"],
+              ["equals", "Deck", "event.deck"],
+              ["equals", 0, "event.deck_dict.card_count"]],
+             ["run_all",
+              ["send_chat", "computer", "Deck Empty"],
+              ["move_and_shuffle", "play", "Deck", ["sub", "game.decks.play.card_count", 1]]]]),
+
     ]
     game = MaoGame({}, {}, args.rules + rules, verbose=args.verbose)
     game.start_game()

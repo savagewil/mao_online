@@ -41,6 +41,7 @@ class EvalOperations(Enum):
     ADD_PLAYER = "add_player"
     SEND_CHAT = "send_chat"
     FORMAT = "format"
+    MOVE_SHUFFLE = "move_and_shuffle"
 
     @classmethod
     def has_string(cls, string: str):
@@ -152,6 +153,10 @@ class Eval(object):
             case EvalOperations.DEAL_CARDS:
                 return game.dealCards(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
                                       self.evals[2].get_value(event, game))
+            case EvalOperations.MOVE_SHUFFLE:
+                return game.dealCards(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
+                                      self.evals[2].get_value(event, game), True, True)
+
             case EvalOperations.PLAY_CARD:
                 return game.playCard(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game),
                                      self.evals[2].get_value(event, game))

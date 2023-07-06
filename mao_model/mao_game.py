@@ -30,20 +30,23 @@ class MaoGame:
     def drawCards(self, player: str, deck: str, count: int):
         player_ = self.players[player]
         deck_ = self.decks[deck]
-        for _ in range(count):
-            card = deck_.draw()
+        cards = deck_.draw(count)
+        for card in cards:
             player_.hand.add(card)
             self.addEvent(type="draw", player=player, player_dict=self.players[player].to_dict(), deck=deck,
+                          deck_dict=deck_.to_dict(),
                           card=card.to_dict())
         self.chat.append(f"{player} drew {count} cards from {deck}")
 
-    def dealCards(self, deck_from: str, deck_to: str, count: int):
+    def dealCards(self, deck_from: str, deck_to: str, count: int, shuffled=False, bottom=False):
         deck_from_ = self.decks[deck_from]
         deck_to_ = self.decks[deck_to]
-        for _ in range(count):
-            card = deck_from_.draw()
+        cards = deck_from_.draw(count, not bottom)
+        for card in cards:
             deck_to_.add_to_top(card)
             self.addEvent(type="deal", deck_from=deck_from, deck_to=deck_to, card=card.to_dict())
+        if shuffled:
+            deck_to_.shuffle()
         self.chat.append(f"Dealt {count} cards from {deck_from} to {deck_to}")
 
     def playCard(self, player: str, deck: str, index: str):

@@ -28,8 +28,15 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.cards)
 
-    def draw(self):
-        return self.cards.pop(0)
+    def draw(self, count=1, top=True):
+        if top:
+            result = self.cards[:count]
+            self.cards = self.cards[count:]
+            return result
+        else:
+            result = self.cards[-count:]
+            self.cards = self.cards[:-count]
+            return result
 
     def peek(self):
         return self.cards[0]
