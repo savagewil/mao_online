@@ -42,6 +42,9 @@ class EvalOperations(Enum):
     SEND_CHAT = "send_chat"
     FORMAT = "format"
     MOVE_SHUFFLE = "move_and_shuffle"
+    END = "end_game"
+    FUNCTION = "function"
+    EVAL = "eval"
 
     @classmethod
     def has_string(cls, string: str):
@@ -177,6 +180,12 @@ class Eval(object):
             case EvalOperations.FORMAT:
                 return self.evals[0].get_value(event, game) % tuple(
                     eval_.get_value(event, game) for eval_ in self.evals[1:])
+            case EvalOperations.END:
+                game.end_game()
+            case EvalOperations.FUNCTION:
+                return self.evals[0]
+            case EvalOperations.EVAL:
+                return self.evals[0].get_value(event, game).get_value(event, game)
 
     def __eq__(self, other):
         return self.op == other.op and len(self.evals) == len(other.evals) and all(

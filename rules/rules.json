@@ -384,5 +384,43 @@
         ]
       ]
     ]
+  ],
+  "quiting": [
+    "if",
+    [
+      "all",
+      [
+        "equals",
+        "chat",
+        "event.type"
+      ],
+      [
+        [
+          "equals",
+          "event.player",
+          [
+            "get_list",
+            "game.player_order",
+            "game.turn"
+          ]
+        ]
+      ],
+      [
+        "any",
+        [
+          "match",
+          "\\s*quit\\s*",
+          "event.message"
+        ],
+        [
+          "match",
+          "\\s*q\\s*",
+          "event.message"
+        ]
+      ]
+    ],
+    [
+      "end_game"
+    ]
   ]
 }

@@ -25,8 +25,9 @@ if __name__ == '__main__':
     game.start_game()
     for player in args.players:
         game.addPlayer(player)
+
+    game.handle_events()
     while not game.over:
-        game.handle_events()
         print("\n" * 20)
         print("\t" + "\n\t".join(game.chat))
 
@@ -37,3 +38,4 @@ if __name__ == '__main__':
         print(render_hand(game.players[game.properties['player_order'][game.properties['turn']]].hand))
         text = input(f"{game.properties['player_order'][game.properties['turn']]} send chat:")
         game.sendChat(game.properties['player_order'][game.properties['turn']], text)
+        game.handle_events()
