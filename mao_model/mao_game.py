@@ -48,7 +48,10 @@ class MaoGame:
             self.addEvent(type="deal", deck_from=deck_from, deck_to=deck_to, card=card.to_dict())
         if shuffled:
             deck_to_.shuffle()
-        self.chat.append(f"Dealt {count} cards from {deck_from} to {deck_to}")
+        if count > 1:
+            self.chat.append(f"Dealt {count} cards from {deck_from} to {deck_to}")
+        else:
+            self.chat.append(f"Dealt {cards[0]} from {deck_from} to {deck_to}")
 
     def playCard(self, player: str, deck: str, index: str):
         self.LOG(f"{player} plays {index} on {deck} ")

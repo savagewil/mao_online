@@ -5,7 +5,7 @@ from typing import Union
 
 from mao_model.mao_event import MaoEvent
 from mao_model.mao_game import MaoGame
-from mao_model.utils import table_lookup
+from mao_model.utils import table_lookup, table_set
 
 
 class EvalOperations(Enum):
@@ -97,14 +97,15 @@ class Eval(object):
                         game.setGameProperty(lookup, self.evals[2].get_value(event, game))
                     else:
                         table = event.properties
-                        variables = lookup.split(".")
-                        for var in variables[:-1]:
-                            if var in table and isinstance(table[var], dict):
-                                table = table[var]
-                            else:
-                                table[var] = {}
-                                table = table[var]
-                        table[variables[-1]] = self.evals[2].get_value(event, game)
+                        table_set(table, lookup, self.evals[2].get_value(event, game))
+                        # variables = lookup.split(".")
+                        # for var in variables[:-1]:
+                        #     if var in table and isinstance(table[var], dict):
+                        #         table = table[var]
+                        #     else:
+                        #         table[var] = {}
+                        #         table = table[var]
+                        # table[variables[-1]] = self.evals[2].get_value(event, game)
                 else:
                     if self.evals[0].get_value(event, game) == "game":
                         table = game.properties
@@ -185,6 +186,8 @@ class Eval(object):
             case EvalOperations.FUNCTION:
                 return self.evals[0]
             case EvalOperations.EVAL:
+                for index in range(1, len(self.evals)):
+                    event.properties[f"arg_{index}"] = self.evals[index].get_value(event, game)
                 return self.evals[0].get_value(event, game).get_value(event, game)
 
     def __eq__(self, other):

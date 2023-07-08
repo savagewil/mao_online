@@ -38,6 +38,34 @@
         "set",
         "game.drew",
         0
+      ],
+      [
+        "set",
+        "game.legal",
+        [
+          "function",
+          [
+            "any",
+            [
+              "equals",
+              [
+                "get_dict",
+                "event.arg_1",
+                "suit"
+              ],
+              "game.decks.play.top_card.suit"
+            ],
+            [
+              "equals",
+              [
+                "get_dict",
+                "event.arg_1",
+                "rank"
+              ],
+              "game.decks.play.top_card.rank"
+            ]
+          ]
+        ]
       ]
     ]
   ],
@@ -67,7 +95,7 @@
       ]
     ]
   ],
-  "PLaying": [
+  "Playing": [
     "if",
     [
       "all",
@@ -104,40 +132,16 @@
     [
       "if_else",
       [
-        "any",
+        "eval",
+        "game.legal",
         [
-          "equals",
+          "get_list",
+          "event.player_dict.hand",
           [
-            "get_dict",
-            [
-              "get_list",
-              "event.player_dict.hand",
-              [
-                "find",
-                "\\d+",
-                "event.message"
-              ]
-            ],
-            "suit"
-          ],
-          "game.decks.play.top_card.suit"
-        ],
-        [
-          "equals",
-          [
-            "get_dict",
-            [
-              "get_list",
-              "event.player_dict.hand",
-              [
-                "find",
-                "\\d+",
-                "event.message"
-              ]
-            ],
-            "rank"
-          ],
-          "game.decks.play.top_card.rank"
+            "find",
+            "\\d+",
+            "event.message"
+          ]
         ]
       ],
       [
