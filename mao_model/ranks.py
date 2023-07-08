@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Ranks(Enum):
-    ONE = 0
+    ACE = 0
     TWO = 1
     THREE = 2
     FOUR = 3

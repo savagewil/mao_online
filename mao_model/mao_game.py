@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 
 from mao_model.deck import Deck
@@ -74,6 +75,12 @@ class MaoGame:
         self.LOG(f"Player: {player_name} added")
         self.addEvent(type="player", player=player_name)
 
+    def addRule(self, rule_name: str, rule: object):
+        self.rules[rule_name] = rule
+        self.LOG(f"New rule added: {rule}")
+        self.chat.append(f"New rule added")
+        self.addEvent(type="rule", rule=rule_name)
+
     def setGameProperty(self, property: str, value: str):
         table = self.properties
         variables = property.split(".")
@@ -96,7 +103,7 @@ class MaoGame:
 
     def handle_event(self, event: MaoEvent):
         self.LOG(f"Handled event {event}")
-        for rule in self.rules.values():
+        for rule in list(self.rules.values()):
             rule.handle_event(event, self)
 
     def start_game(self):
@@ -122,6 +129,7 @@ class MaoGame:
         return dict(
             players={player_name: player.to_dict() for player_name, player in self.players.items()},
             decks={deck_name: deck.to_dict() for deck_name, deck in self.decks.items()},
+            rules={rule_name: json.dumps(rule.serialize()) for rule_name, rule in self.rules.items()},
             chat=self.chat,
             **self.properties
         )

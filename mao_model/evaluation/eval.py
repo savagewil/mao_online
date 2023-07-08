@@ -9,6 +9,8 @@ from mao_model.utils import table_lookup, table_set
 
 
 class EvalOperations(Enum):
+    SERIALIZE = "serialize"
+    DESERIALIZE = "deserialize"
     ANY = "any"
     ALL = "all"
     NOT = "not"
@@ -24,8 +26,8 @@ class EvalOperations(Enum):
     INCREMENT = "inc"
     DECREMENT = "dec"
     EQUALS = "equals"
-    LESS_THAN = "greater_than"
-    GREATER_THAN = "less_than"
+    LESS_THAN = "less_than"
+    GREATER_THAN = "greater_than"
     RUN_ALL = "run_all"
     APPEND = "append"
     LENGTH = "len"
@@ -39,6 +41,7 @@ class EvalOperations(Enum):
     PLAY_CARD = "play_card"
     ADD_DECK = "add_deck"
     ADD_PLAYER = "add_player"
+    ADD_RULE = "add_rule"
     SEND_CHAT = "send_chat"
     FORMAT = "format"
     MOVE_SHUFFLE = "move_and_shuffle"
@@ -98,14 +101,6 @@ class Eval(object):
                     else:
                         table = event.properties
                         table_set(table, lookup, self.evals[2].get_value(event, game))
-                        # variables = lookup.split(".")
-                        # for var in variables[:-1]:
-                        #     if var in table and isinstance(table[var], dict):
-                        #         table = table[var]
-                        #     else:
-                        #         table[var] = {}
-                        #         table = table[var]
-                        # table[variables[-1]] = self.evals[2].get_value(event, game)
                 else:
                     if self.evals[0].get_value(event, game) == "game":
                         table = game.properties
@@ -176,6 +171,8 @@ class Eval(object):
                     return game.addDeck(self.evals[0].get_value(event, game))
             case EvalOperations.ADD_PLAYER:
                 return game.addPlayer(self.evals[0].get_value(event, game))
+            case EvalOperations.ADD_RULE:
+                return game.addRule(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
             case EvalOperations.SEND_CHAT:
                 return game.sendChat(self.evals[0].get_value(event, game), self.evals[1].get_value(event, game))
             case EvalOperations.FORMAT:
@@ -189,6 +186,10 @@ class Eval(object):
                 for index in range(1, len(self.evals)):
                     event.properties[f"arg_{index}"] = self.evals[index].get_value(event, game)
                 return self.evals[0].get_value(event, game).get_value(event, game)
+            case EvalOperations.DESERIALIZE:
+                return Eval.deserialize(json.loads(self.evals[0].get_value(event, game)))
+            case EvalOperations.SERIALIZE:
+                return json.dumps(self.evals[0].get_value(event, game).serialize())
 
     def __eq__(self, other):
         return self.op == other.op and len(self.evals) == len(other.evals) and all(

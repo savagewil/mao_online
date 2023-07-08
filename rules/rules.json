@@ -88,6 +88,16 @@
         ]
       ],
       [
+        "set",
+        "game",
+        [
+          "format",
+          "add_rule.%s",
+          "event.player"
+        ],
+        1
+      ],
+      [
         "draw_cards",
         "event.player",
         "Deck",
@@ -343,6 +353,27 @@
         ]
       ],
       [
+        "set",
+        "game",
+        [
+          "format",
+          "add_rule.%s",
+          "event.player"
+        ],
+        [
+          "inc",
+          [
+            "load",
+            "game",
+            [
+              "format",
+              "add_rule.%s",
+              "event.player"
+            ]
+          ]
+        ]
+      ],
+      [
         "draw_cards",
         "event.player",
         "Deck",
@@ -425,6 +456,79 @@
     ],
     [
       "end_game"
+    ]
+  ],
+  "new_rule": [
+    "if",
+    [
+      "all",
+      [
+        "equals",
+        "chat",
+        "event.type"
+      ],
+      [
+        [
+          "equals",
+          "event.player",
+          [
+            "get_list",
+            "game.player_order",
+            "game.turn"
+          ]
+        ]
+      ],
+      [
+        "any",
+        [
+          "match",
+          "\\s*rule .*",
+          "event.message"
+        ]
+      ]
+    ],
+    [
+      "if_else",
+      [
+        "greater_than",
+        [
+          "load",
+          "game",
+          [
+            "format",
+            "add_rule.%s",
+            "event.player"
+          ]
+        ],
+        0
+      ],
+      [
+        "run_all",
+        [
+          "add_rule",
+          [
+            "format",
+            "rule_%d",
+            [
+              "len",
+              "game.rules"
+            ]
+          ],
+          [
+            "deserialize",
+            [
+              "find",
+              "\\s*rule (.*)",
+              "event.message"
+            ]
+          ]
+        ]
+      ],
+      [
+        "send_chat",
+        "computer",
+        "You must win to make a rule"
+      ]
     ]
   ]
 }
