@@ -4,7 +4,6 @@ from enum import Enum
 from typing import Union
 
 from mao_model.mao_event import MaoEvent
-from mao_model.mao_game import MaoGame
 from mao_model.utils import table_lookup, table_set
 
 
@@ -54,13 +53,15 @@ class EvalOperations(Enum):
         return string in set(entry.value for entry in cls)
 
 
-class Eval(object):
+class Eval(list):
     def __init__(self, op: EvalOperations, evals: list, name=""):
         self.op = op
         self.evals = evals
         self.name = ""
+        print(self.serialize())
+        list.__init__(self.serialize())
 
-    def get_value(self, event: MaoEvent, game: MaoGame) -> object:
+    def get_value(self, event: MaoEvent, game) -> object:
         match self.op:
             case EvalOperations.NOT:
                 return not self.evals[0].get_value(event, game)
@@ -218,7 +219,7 @@ class Eval(object):
         else:
             return EvalLiteral(obj)
 
-    def handle_event(self, event: MaoEvent, game: MaoGame):
+    def handle_event(self, event: MaoEvent, game):
         self.get_value(event, game)
 
     def to_json(self):
@@ -233,7 +234,7 @@ class EvalLiteral(Eval):
     def __init__(self, value):
         self.value = value
 
-    def get_value(self, event: MaoEvent, game: MaoGame):
+    def get_value(self, event: MaoEvent, game):
         return self.value
 
     def serialize(self) -> Union[list, object]:

@@ -115,14 +115,12 @@
         "event.type"
       ],
       [
+        "equals",
+        "event.player",
         [
-          "equals",
-          "event.player",
-          [
-            "get_list",
-            "game.player_order",
-            "game.turn"
-          ]
+          "get_list",
+          "game.player_order",
+          "game.turn"
         ]
       ],
       [

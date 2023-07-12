@@ -445,3 +445,8 @@ class TestEval(TestCase):
 
         eval_ = Eval.deserialize(["serialize", ['function', ['add', 2, 2]]])
         self.assertEqual(json.dumps(['add', 2, 2]), eval_.get_value(self.event, self.game), "Eval should deserialize")
+
+    def test_eval_json(self):
+        eval_ = Eval.deserialize(['add', 2, 2])
+        print(eval_)
+        print(json.dumps(eval_))

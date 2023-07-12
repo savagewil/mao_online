@@ -15,3 +15,8 @@ class Card:
 
     def __repr__(self):
         return self.__str__()
+
+    @classmethod
+    def from_dict(cls, card):
+        print(card["suit"], card["rank"])
+        return cls(Suits[card["suit"]], Ranks[card["rank"]])

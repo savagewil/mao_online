@@ -15,3 +15,7 @@ class Player:
 
     def to_dict(self):
         return {"name": self.name, "hand": self.hand.to_dict()}
+
+    @classmethod
+    def from_dict(cls, player: dict):
+        return cls(name=player["name"], hand=Hand.from_dict(player["hand"]))

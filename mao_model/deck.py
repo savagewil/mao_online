@@ -57,6 +57,11 @@ class Deck:
 
     def to_dict(self):
         if self.cards:
-            return {"card_count": len(self.cards), "top_card": self.peek().to_dict()}
+            return {"card_count": len(self.cards), "top_card": self.peek().to_dict(),
+                    "cards": [card.to_dict() for card in self.cards]}
         else:
-            return {"card_count": len(self.cards), "top_card": None}
+            return {"card_count": len(self.cards), "top_card": None, "cards": []}
+
+    @classmethod
+    def from_dict(cls, json_dict):
+        return cls([Card.from_dict(card) for card in json_dict["cards"]])

@@ -2,20 +2,22 @@ import json
 from typing import Dict, List
 
 from mao_model.deck import Deck
+from mao_model.evaluation.eval import Eval
 from mao_model.hand import Hand
 from mao_model.mao_event import MaoEvent
 from mao_model.player import Player
 
 
 class MaoGame:
-    def __init__(self, players: Dict[str, Player], decks: Dict[str, Deck], rules: Dict[str, object], properties={},
-                 verbose=False):
-        self.players = players
-        self.decks = decks
-        self.rules = rules
-        self.chat: List[str] = []
+    def __init__(self, players: Dict[str, Player] = None, decks: Dict[str, Deck] = None,
+                 rules: Dict[str, Eval] = None, properties=None,
+                 chat=None, verbose=False):
+        self.players: Dict[str, Player] = {} if players is None else players
+        self.decks: Dict[str, Deck] = {} if decks is None else decks
+        self.rules: Dict[str, Eval] = {} if rules is None else rules
+        self.chat: List[str] = [] if chat is None else chat
         self.eventQueue: List[MaoEvent] = []
-        self.properties = properties
+        self.properties = {} if properties is None else properties
         self.over = False
         self.verbose = verbose
 
@@ -117,13 +119,17 @@ class MaoGame:
         queue, self.eventQueue = self.eventQueue, []
         return queue
 
-    def handle_events(self):
-        limit = 1000
+    def handle_events(self, limit=1000):
         for _ in range(limit):
             if self.eventQueue:
                 self.handle_event(self.eventQueue.pop(0))
             else:
                 return
+
+    def event_loop(self):
+        while not self.over:
+            if self.eventQueue:
+                self.handle_event(self.eventQueue.pop(0))
 
     def to_dict(self):
         return dict(
@@ -132,6 +138,16 @@ class MaoGame:
             rules={rule_name: json.dumps(rule.serialize()) for rule_name, rule in self.rules.items()},
             chat=self.chat,
             **self.properties
+        )
+
+    @classmethod
+    def from_dict(cls, json_dict: dict):
+        return cls(
+            players={player_name: Player.from_dict(player) for player_name, player in json_dict["players"].items()},
+            decks={deck_name: Deck.from_dict(deck) for deck_name, deck in json_dict["decks"].items()},
+            rules={rule_name: Eval.deserialize(json.loads(rule)) for rule_name, rule in json_dict["rules"].items()},
+            chat=json_dict["chat"],
+            properties=json_dict
         )
 
 

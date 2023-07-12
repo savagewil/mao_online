@@ -28,3 +28,7 @@ class Hand:
 
     def to_dict(self):
         return [card.to_dict() for card in self.cards]
+
+    @classmethod
+    def from_dict(cls, cards: list):
+        return cls(cards=[Card.from_dict(card) for card in cards])

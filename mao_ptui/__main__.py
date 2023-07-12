@@ -1,4 +1,5 @@
 import json
+import sys
 from argparse import ArgumentParser
 from typing import List
 
@@ -8,6 +9,8 @@ from mao_ptui.rendering_utils import render_hand, render_deck
 
 
 def load_rules(rule_files: List[str]):
+    assert sys.version_info >= (3, 10)
+    print(sys.version_info)
     rules = {}
     for rule_file_path in rule_files:
         rules = dict(**rules, **json.load(open(rule_file_path, 'r')))
